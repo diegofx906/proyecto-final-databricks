@@ -1,0 +1,39 @@
+name: Despliegue ETL Ecommerce
+
+on:
+  push:
+    branches: [ "main" ] # Se ejecuta al hacer push a la rama main
+
+jobs:
+  deploy-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v3
+
+      - name: Instalar Databricks CLI
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | sh
+
+      - name: Configurar Databricks CLI
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          databricks configure --token <<< "$DATABRICKS_HOST"$'\n'"$DATABRICKS_TOKEN"
+
+      - name: Desplegar Notebooks al Workspace
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          # Sube la carpeta 'proceso' a tu workspace (ajusta la ruta de destino)
+          databricks workspace import-dir ./proceso /Shared/proceso --overwrite
+
+      - name: Ejecutar el Job de ETL
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          # Ejecuta el job por su nombre (debe coincidir con el nombre que le diste en Workflows)
+          databricks jobs run-now --job-name "ETL_Ecommerce_Medallion"
