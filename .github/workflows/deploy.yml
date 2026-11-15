@@ -27,7 +27,7 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
-          # Sube la carpeta 'proceso' a tu workspace (ajusta la ruta de destino)
+          # Sube la carpeta 'proceso' a tu workspace
           databricks workspace import-dir ./proceso /Shared/proceso --overwrite
 
       - name: Ejecutar el Job de ETL
@@ -35,5 +35,5 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
         run: |
-          # Ejecuta el job por su nombre (debe coincidir con el nombre que le diste en Workflows)
-          databricks jobs run-now --job-name "ETL_Ecommerce_Medallion"
+          # Ejecuta el job usando el ID numérico
+          databricks jobs run-now 57495774479332
